@@ -439,6 +439,13 @@ describe('angular', function() {
   });
   });
 
+  describe('isArrayLike', function() {
+    it('should return true if passed an array', function() {
+      expect(isArrayLike([1,2,3,4])).toBe(true)
+    });
+    
+  });
+
 
   describe('forEach', function() {
     it('should iterate over *own* object properties', function() {
