@@ -440,10 +440,12 @@ describe('angular', function() {
   });
 
   describe('isArrayLike', function() {
-    it('should return true if passed an array', function() {
-      expect(isArrayLike([1,2,3,4])).toBe(true)
+    it ('should return false if passed a non-array-like', function(){
+      expect(isArrayLike(10)).toBe(false)
     });
-    
+    it('should return true if passed an array', function() {
+      expect(isArrayLike([1,2,3,4])).toBe(true);
+    });
   });
 
 
