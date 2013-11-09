@@ -167,16 +167,15 @@ if (isNaN(msie)) {
  *                   String ...)
  */
 function isArrayLike(obj) {
-  var length
-  if (obj == null || isWindow(obj)) {
-    return false;
-  }
-  if(obj.nodeType === 1 && obj.hasChildNodes()) return true;
-  if(obj.hasOwnProperty('length') && obj.hasOwnProperty('callee')) return true;
-  length = obj.length;
-  return isString(obj) || isArray(obj) || (
-    !isObject(obj) && length === 0 || (
-      typeof length === 'number' && length >= 0 && (length - 1) in obj));
+  var length, objExists, isNodeList, isArguments, isSomeOtherObj;
+  objExists = isDefined(obj) && obj !== null;
+  length = objExists ? obj.length : undefined;
+  isNodeList = objExists && obj.nodeType === 1 && obj.hasChildNodes();
+  isArguments = objExists && obj.hasOwnProperty('length') && obj.hasOwnProperty('callee');
+  isSomeOtherObj = objExists && !isArguments && !isNodeList && !isArray(obj) && !isString(obj) && (!isObject(obj) && length === 0 || (typeof length === 'number' && length >= 0 && (length - 1) in obj));
+  
+  return objExists && !isWindow(obj) && (((obj.nodeType === 1 && obj.hasChildNodes()) || (obj.hasOwnProperty('length') && obj.hasOwnProperty('callee')) || isString(obj) || isArray(obj)) || (!isObject(obj) && length === 0 || (typeof length === 'number' && length >= 0 && (length - 1) in obj)) );
+
 }
 
 /**
