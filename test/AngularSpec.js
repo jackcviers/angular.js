@@ -160,54 +160,9 @@ describe('angular', function() {
     });
 
     it('should return the object with the cloned properties, even if empty', function(){
-      var forEach, extend, options;
-      forEach = function(obj, iterator, context) {
-        var key;
-        if (obj) {
-          if (isFunction(obj)){
-            for (key in obj) {
-              if (key != 'prototype' && key != 'length' && key != 'name' && obj.hasOwnProperty(key)) {
-                iterator.call(context, obj[key], key);
-              }
-            }
-          } else if (obj.forEach && obj.forEach !== forEach) {
-            obj.forEach(iterator, context);
-          } else if (isArrayLike(obj)) {
-            dump('In isArrayLike.')
-            for (key = 0; key < obj.length; key++){
-              dump('key:' + key);
-              dump('iterator: ' + iterator.toString());
-              iterator.call(context, obj[key], key);
-            }
-          } else {
-            for (key in obj) {
-              if (obj.hasOwnProperty(key)) {
-                iterator.call(context, obj[key], key);
-              }
-            }
-          }
-        }
-        return obj;
-      };
-      extend = function(dst) {
-        var h = dst.$$hashKey;
-        forEach(arguments, function(obj){
-          if (obj !== dst) {
-            forEach(obj, function(value, key){
-              dump('in iterator');
-              dump('value: ' + value);
-              dump('key: ' + key);
-              dst[key] = value;
-            });
-          }
-        });
-
-        setHashKey(dst,h);
-        return dst;
-      }
+      var options;
       options = {};
       options = extend(options, {radius: 30, length: 0});
-      dump(options);
       expect(options.hasOwnProperty('radius')).toBe(true);
     });
 
