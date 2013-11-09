@@ -159,6 +159,58 @@ describe('angular', function() {
       expect(hashKey(dst)).not.toEqual(hashKey(src));
     });
 
+    it('should return the object with the cloned properties, even if empty', function(){
+      var forEach, extend, options;
+      forEach = function(obj, iterator, context) {
+        var key;
+        if (obj) {
+          if (isFunction(obj)){
+            for (key in obj) {
+              if (key != 'prototype' && key != 'length' && key != 'name' && obj.hasOwnProperty(key)) {
+                iterator.call(context, obj[key], key);
+              }
+            }
+          } else if (obj.forEach && obj.forEach !== forEach) {
+            obj.forEach(iterator, context);
+          } else if (isArrayLike(obj)) {
+            dump('In isArrayLike.')
+            for (key = 0; key < obj.length; key++){
+              dump('key:' + key);
+              dump('iterator: ' + iterator.toString());
+              iterator.call(context, obj[key], key);
+            }
+          } else {
+            for (key in obj) {
+              if (obj.hasOwnProperty(key)) {
+                iterator.call(context, obj[key], key);
+              }
+            }
+          }
+        }
+        return obj;
+      };
+      extend = function(dst) {
+        var h = dst.$$hashKey;
+        forEach(arguments, function(obj){
+          if (obj !== dst) {
+            forEach(obj, function(value, key){
+              dump('in iterator');
+              dump('value: ' + value);
+              dump('key: ' + key);
+              dst[key] = value;
+            });
+          }
+        });
+
+        setHashKey(dst,h);
+        return dst;
+      }
+      options = {};
+      options = extend(options, {radius: 30, length: 0});
+      dump(options);
+      expect(options.hasOwnProperty('radius')).toBe(true);
+    });
+
     it('should retain the previous $$hashKey', function() {
       var src,dst,h;
       src = {};
@@ -440,11 +492,20 @@ describe('angular', function() {
   });
 
   describe('isArrayLike', function() {
-    it ('should return false if passed a non-array-like', function(){
+    it ('should return false if passed a number', function(){
       expect(isArrayLike(10)).toBe(false)
     });
     it('should return true if passed an array', function() {
       expect(isArrayLike([1,2,3,4])).toBe(true);
+    });
+    it('should return true if passed an object', function(){
+      expect(isArrayLike({0:"test", 1:"bob", 2:"tree", length:3})).toBe(true);
+    });
+    it('should return true for the arguments object', function(){
+      var testFunction = function(boy) {
+        return isArrayLike(arguments);
+      };
+      expect(testFunction()).toBe(true);
     });
   });
 
