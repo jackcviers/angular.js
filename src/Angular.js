@@ -167,15 +167,44 @@ if (isNaN(msie)) {
  *                   String ...)
  */
 function isArrayLike(obj) {
-  var length, objExists, isNodeList, isArguments, isSomeOtherObj;
+  // snake case is to avoid shadowing camel-cased globals
+  var length, objExists, isNodeList, isArguments, isSomeOtherObj, is_array, is_string, is_object;
   objExists = isDefined(obj) && obj !== null;
   length = objExists ? obj.length : undefined;
+  is_array = isArray(obj);
+  is_string = isString(obj);
+  is_object = isObject(obj);
   isNodeList = objExists && obj.nodeType === 1 && obj.hasChildNodes();
   isArguments = objExists && obj.hasOwnProperty('length') && obj.hasOwnProperty('callee');
-  isSomeOtherObj = objExists && !isArguments && !isNodeList && !isArray(obj) && !isString(obj) && (!isObject(obj) && length === 0 || (typeof length === 'number' && length >= 0 && (length - 1) in obj));
+  // this only works if it doesn't return 'object' from typeof and isn't another arrayLike
+  isSomeOtherObj = objExists &&
+    !isArguments             &&
+    !isNodeList              &&
+    !is_array                &&
+    !is_string               &&
+    (
+      !is_object   &&
+      length === 0 ||
+        (
+          isNumber(length) &&
+            length >= 0    &&
+            (length - 1) in obj
+        )
+    );
   
-  return objExists && !isWindow(obj) && (((obj.nodeType === 1 && obj.hasChildNodes()) || (obj.hasOwnProperty('length') && obj.hasOwnProperty('callee')) || isString(obj) || isArray(obj)) || (!isObject(obj) && length === 0 || (typeof length === 'number' && length >= 0 && (length - 1) in obj)) );
-
+  return (
+    objExists      &&
+    !isWindow(obj) &&
+    (
+      (
+        isNodeList  ||
+        isArguments ||
+        is_string   ||
+        is_array
+      ) ||
+      isSomeOtherObj
+    )
+  );
 }
 
 /**
