@@ -177,7 +177,7 @@ function isArrayLike(obj) {
     return true;
   }
 
-  return isString(obj) || isArray(obj) || length === 0 ||
+  return isString(obj) || isArray(obj) || (!isObject(obj) && length === 0) ||
          typeof length === 'number' && length > 0 && (length - 1) in obj;
 }
 
@@ -224,7 +224,7 @@ function forEach(obj, iterator, context) {
         iterator.call(context, obj[key], key);
     } else {
       for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
           iterator.call(context, obj[key], key);
         }
       }
